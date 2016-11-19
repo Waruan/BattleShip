@@ -23,15 +23,55 @@
 //#define D   A0
 RGBmatrixPanel matrix(A, B, C, D, CLK, LAT, OE, false);
 
-char input[5]; //Data from controller
+
+
+char input[6]; //Data from controller
 int gameMode = -1; //Save the mode Default at -1 so that in not in any mode
 int numberOfPlayer = 1;//Save number of player Default at 1 player 
+int ships[10]={2,2,2,2,3,3,3,4,4,6};
+int rotation = 0;//0 for vertial and 1 for horztional
+int whichShip = 0;
+
+int rotation2 = 0;//0 for vertial and 1 for horztional
+int whichShip2 = 0;
 
 int cursorX = 0;// X-axis of Cursor
 int cursorY = 0;// Y-axis of Cursor
 
+int cursorX2 = 0;// X-axis of Cursor
+int cursorY2 = 0;// Y-axis of Cursor
+
+int lastLocation = 0;
+int lastLocation2 = 0;
+int shipMatrix[10][10] = {
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+
+int shipMatrix2[10][10] = {
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
 void setup() {
-  input[4] = '\0';
+  input[5] = '\0';
   Wire.begin(8);                // join i2c bus with address #8
   Wire.onReceive(receiveEvent);
   Serial.begin(9600);  // start serial for output
@@ -55,7 +95,7 @@ void receiveEvent(int howMany)
   //Serial.println("Recieve");
   // loop through all but the last
   int num = 0;
-  while(Wire.available() && num < 5) 
+  while(Wire.available() && num < 6) 
   {
      // receive byte as an integer
     char c = Wire.read();
@@ -65,7 +105,7 @@ void receiveEvent(int howMany)
     
   }
   
-  printCont();
+  
 
   // Number of Player Selection
   if(input[0] == '0'){
@@ -87,16 +127,46 @@ void receiveEvent(int howMany)
       board();
       gameMode = 1;
     }
-    if(input[1] != '0' || input[2] != '0'){
+    else{
       placeShip(1);
     }
-    
+  }if(input[0] == '2'){
+    if(gameMode != 1){
+      board();
+      gameMode = 1;
+    }
+    else{
+      placeShip(2);
+    }
   }
+
+
+  
 }
 
 void placeShip(int player){
-  matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(0,0,0));
+  /*Serial.println(input[4]);
+  if(input[4] == '2'){
+    matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(0,7,0));      
+  }
+   else if(input[4] == '1'){
+    matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(0,7,0)); 
+  }
+  else if(input[4] == '0'){
+    matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(0,0,0)); 
+  }*/
   if(player == 1){
+  int xdirection = cursorX;
+  int ydirection = cursorY;
+  
+  if(lastLocation == 0){
+    matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(0,0,0)); 
+    shipMatrix[cursorX][cursorY] = 0;
+  }
+  else if(lastLocation == 2){
+    matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(0,7,0)); 
+    shipMatrix[cursorX][cursorY] = 2;
+  }
     if(input[1] == '1'){
       if(cursorX < 9){
         cursorX++;
@@ -118,9 +188,75 @@ void placeShip(int player){
         cursorY--;
       }
     }
-    matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(7,7,7));
+
+    shipMatrix[xdirection][ydirection]= lastLocation;
+    lastLocation = shipMatrix[cursorX][cursorY];
+     matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(7,7,7));
+     shipMatrix[cursorX][cursorY] = 1;
+    if(input[4] == '1'){
+      if(whichShip < 10){
+        for(int i=0;i<ships[whichShip];i++){
+          matrix.drawPixel((3+cursorX+i),(19+cursorY),matrix.Color333(0,7,0));
+          shipMatrix[cursorX+i][cursorY] = 2;
+          lastLocation = 2;
+        }
+        whichShip++;
+      }
+    }
+    
   }
- 
+
+
+  if(player == 2){
+  int xdirection = cursorX2;
+  int ydirection = cursorY2;
+  //matrix.drawRect(2,2,12,12, matrix.Color333(7, 0, 0));
+  if(lastLocation2 == 0){
+    matrix.drawPixel((3+cursorX2),(3+cursorY2),matrix.Color333(0,0,0)); 
+    shipMatrix2[cursorX2][cursorY2] = 0;
+  }
+  else if(lastLocation2 == 2){
+    matrix.drawPixel((3+cursorX2),(3+cursorY2),matrix.Color333(0,7,0)); 
+    shipMatrix2[cursorX2][cursorY2] = 2;
+  }
+    if(input[1] == '1'){
+      if(cursorX2 < 9){
+        cursorX2++;
+      }
+    }
+    else if (input[1] == '2'){
+      if(cursorX2 > 0){
+        cursorX2--;
+      }
+    }
+
+    if(input[2] == '1'){
+      if(cursorY2 < 9){
+        cursorY2++;
+      }
+    }
+    else if (input[2] == '2'){
+      if(cursorY2 > 0){
+        cursorY2--;
+      }
+    }
+
+    shipMatrix2[xdirection][ydirection]= lastLocation2;
+    lastLocation2 = shipMatrix2[cursorX2][cursorY2];
+     matrix.drawPixel((3+cursorX2),(3+cursorY2),matrix.Color333(7,7,7));
+     shipMatrix2[cursorX2][cursorY2] = 1;
+    if(input[4] == '1'){
+      if(whichShip2 < 10){
+        for(int i=0;i<ships[whichShip2];i++){
+          matrix.drawPixel((3+cursorX2+i),(3+cursorY2),matrix.Color333(0,7,0));
+          shipMatrix2[cursorX2+i][cursorY2] = 2;
+          lastLocation2 = 2;
+        }
+        whichShip2++;
+      }
+    }
+    
+  }
 }
 
 
@@ -136,6 +272,8 @@ void printCont(){
   Serial.println(input[2]);
   Serial.print("Mode: ");
   Serial.println(input[0]);
+  Serial.print("Extra: ");
+  Serial.println(input[4]);
   Serial.print("\n\n");
   
 }
