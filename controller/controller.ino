@@ -73,6 +73,7 @@ int mMatrix2[10][10] = {
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
+
 void setup() {
   
   pinMode(SW_pin, INPUT);
@@ -488,7 +489,7 @@ void shipmentplacement(int player) {
 bool collisionCheck(int i,int j,int shipSize,bool rotation){
   // check x-axis boundary
   if(rotation == false){
-    if(i+shipSize > 9){
+    if(i+shipSize > 10){
       return false;
     }
     //check collision with other ship
@@ -499,7 +500,7 @@ bool collisionCheck(int i,int j,int shipSize,bool rotation){
     }
   }
   if(rotation == true){
-    if(j+shipSize > 9){
+    if(j+shipSize > 10){
       return false;
     }
     //check collision with other ship
@@ -518,7 +519,7 @@ bool collisionCheck(int i,int j,int shipSize,bool rotation){
 bool collisionCheck2(int i,int j,int shipSize,bool rotation){
   // check x-axis boundary
   if(rotation == false){
-    if(i+shipSize > 9){
+    if(i+shipSize > 10){
       return false;
     }
     //check collision with other ship
@@ -529,7 +530,7 @@ bool collisionCheck2(int i,int j,int shipSize,bool rotation){
     }
   }
   if(rotation == true){
-    if(j+shipSize > 9){
+    if(j+shipSize > 10){
       return false;
     }
     //check collision with other ship
@@ -609,9 +610,7 @@ bool winCheck(){
   
   for(i = 0; i <= 9; i++){  //goes through the rows 
     for(j = 0; j <= 9; j++){   //goes through the colms
-
-      if( mMatrix1[i][j] == shipMatrix2[i][j]){  //if missle matrix 1 equal to 2 than add to win count
-
+      if( mMatrix1[i][j] == shipMatrix2[i][j]){  //if missle matrix 1 equal to 2 than add to win count  
         
         /*if(isHit){
          * need to write isHit and isMiss function to check if its a hit
