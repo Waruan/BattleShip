@@ -515,7 +515,7 @@ void winCheck(){
   
   for(i = 0; i <= 9; i++){  //goes through the rows 
     for(j = 0; j <= 9; j++){   //goes through the colms
-      if( mMatrix1[i][j] == mMatrix2[i][j]){  //if missle matrix 1 equal to 2 than add to win count
+      if( mMatrix1[i][j] == shipMatrix2[i][j]){  //if missle matrix 1 equal to 2 than add to win count
         //may need to change to matrices 
         
         /*if(isHit){
