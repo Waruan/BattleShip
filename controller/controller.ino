@@ -644,7 +644,6 @@ bool winCheck(){
   
 }//End of winCheck function
 
-
 //(a,b) are the coordinates from winCheck
 bool isHit(int a, int b) {
   //go through the matrix until you hit the coordinates 
@@ -653,8 +652,10 @@ bool isHit(int a, int b) {
       
       if(i == a && j == b) { //When the loop reaches coordinates 
         //See if there is a ship there with the shipMatrix 
-        shipMatrix2[i][j];
-        return true;//return true if there is a ship
+        if(shipMatrix2[i][j] == 2 || shipMatrix2[i][j] == 3 || 
+            shipMatrix2[i][j] == 4 || shipMatrix2[i][j] == 5) {
+             return true;//return true if there is a ship 
+            }
       }// End of if statement 
       
     }//End of inner for loop
