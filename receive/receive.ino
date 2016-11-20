@@ -183,7 +183,7 @@ void receiveEvent(int howMany)
     placeMissile(1);
   }
   if(input[0] == '4'){
-    placeMissile(1);
+    placeMissile(2);
   }
 
   
@@ -239,12 +239,12 @@ void placeMissile(int player){
     int ydirection = mcursorY2;
     // matrix.drawRect(18,2,12,12, matrix.Color333(7, 7, 0));
     if(mlastLocation2 == 0){
-      matrix.drawPixel((19+mcursorX),(3+mcursorY2),matrix.Color333(0,0,0)); 
-      mMatrix1[mcursorX2][mcursorY2] = 0;
+      matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(0,0,0)); 
+      mMatrix2[mcursorX2][mcursorY2] = 0;
     }
     else if(mlastLocation2 == 2){
       matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(7,0,0)); 
-      mMatrix1[mcursorX2][mcursorY2] = 2;
+      mMatrix2[mcursorX2][mcursorY2] = 2;
     }
     if(input[1] == '1'){
       if(mcursorX2 < 9){
