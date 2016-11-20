@@ -73,7 +73,6 @@ int mMatrix2[10][10] = {
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-
 void setup() {
   
   pinMode(SW_pin, INPUT);
@@ -610,7 +609,9 @@ bool winCheck(){
   
   for(i = 0; i <= 9; i++){  //goes through the rows 
     for(j = 0; j <= 9; j++){   //goes through the colms
-      if( mMatrix1[i][j] == shipMatrix2[i][j]){  //if missle matrix 1 equal to 2 than add to win count  
+
+      if( mMatrix1[i][j] == shipMatrix2[i][j]){  //if missle matrix 1 equal to 2 than add to win count
+
         
         /*if(isHit){
          * need to write isHit and isMiss function to check if its a hit
