@@ -100,6 +100,7 @@ void loop() {
     input[0] = '2';
     shipmentplacement(2);
   }
+  
   gamePlay();
   delay(500);
 
@@ -201,9 +202,10 @@ void gamePlay(){
   while(win == false){
    while(turn == 1){ 
     input[0] = '3';
+    input[4] = '0';
     movement(1);
     if(input[3] == '0'){
-      if(mMatrix1[cursorLocation[0]][cursorLocation[1]] != 2){
+      if(mMatrix1[cursorLocation[0]][cursorLocation[1]] != 2 && cursorLastValue !=2 ){
         mMatrix1[cursorLocation[0]][cursorLocation[1]] = 2;
         cursorLastValue = 2;
         input[4] = '4';
@@ -222,11 +224,12 @@ void gamePlay(){
     }
     while(turn == 2){ 
     input[0] = '4';
+    input[4] = '0';
     movement2(1);
     if(input[3] == '0'){
-      if(mMatrix2[cursorLocation[0]][cursorLocation[1]] != 2){
-        mMatrix2[cursorLocation[0]][cursorLocation[1]] = 2;
-        cursorLastValue = 2;
+      if(mMatrix2[cursorLocation2[0]][cursorLocation2[1]] != 2 && cursorLastValue2 !=2 ){
+        mMatrix2[cursorLocation2[0]][cursorLocation2[1]] = 2;
+        cursorLastValue2 = 2;
         input[4] = '4';
         input[1] = '0';
         input[2] = '0';
@@ -438,6 +441,7 @@ void shipmentplacement(int player) {
   int ships[10]={2,2,2,2,3,3,3,4,4,6};
   int shipPlaced = 0;
   if(player == 1){
+    shipPlaced = 0;
     while (shipPlaced < 10) {
     movement(0);
     if(input[3] == '0'){
@@ -460,6 +464,7 @@ void shipmentplacement(int player) {
   }
  }
  if(player == 2){
+    shipPlaced = 0;
     while (shipPlaced < 10) {
     movement2(0);
     if(input[3] == '0'){
@@ -468,6 +473,7 @@ void shipmentplacement(int player) {
           shipMatrix2[cursorLocation2[0]+i][cursorLocation2[1]] = 2;
         }
         cursorLastValue2 = 2;
+        shipPlaced++;
         input[4] = '1';
         input[1] = '0';
         input[2] = '0';
@@ -494,7 +500,7 @@ bool collisionCheck(int i,int j,int shipSize,bool rotation){
     }
     //check collision with other ship
     for(int bound = 0;bound<shipSize;bound++){
-      if(shipMatrix[i+bound][j] == 2){
+      if(shipMatrix[i+bound][j] == 2 || cursorLastValue == 2){
         return false; 
       }
     }
@@ -505,7 +511,7 @@ bool collisionCheck(int i,int j,int shipSize,bool rotation){
     }
     //check collision with other ship
     for(int bound = 0;bound<shipSize;bound++){
-      if(shipMatrix[i][j+bound] == 2){
+      if(shipMatrix[i][j+bound] == 2 || cursorLastValue == 2){
         return false; 
       }
     }
@@ -524,7 +530,7 @@ bool collisionCheck2(int i,int j,int shipSize,bool rotation){
     }
     //check collision with other ship
     for(int bound = 0;bound<shipSize;bound++){
-      if(shipMatrix2[i+bound][j] == 2){
+      if(shipMatrix2[i+bound][j] == 2 || cursorLastValue2 == 2){
         return false; 
       }
     }
@@ -535,7 +541,7 @@ bool collisionCheck2(int i,int j,int shipSize,bool rotation){
     }
     //check collision with other ship
     for(int bound = 0;bound<shipSize;bound++){
-      if(shipMatrix2[i][j+bound] == 2){
+      if(shipMatrix2[i][j+bound] == 2 || cursorLastValue2 == 2){
         return false; 
       }
     }
