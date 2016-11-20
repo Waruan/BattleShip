@@ -481,3 +481,35 @@ void printCont(){
   Serial.print("\n\n");
   delay(300);
 }
+
+void winCheck(){
+ int wCount = 0; //score counter
+ int uWin = 17; //winning score
+ int i; //rows
+ int j;  //colms 
+  
+  for(i = 0; i <= 9; i++){  //goes through the rows 
+    for(j = 0; j <= 9; j++){   //goes through the colms
+      if( mMatrix1[i][j] == mMatrix2[i][j]){  //if missle matrix 1 equal to 2 than add to win count  
+        
+        /*if(isHit){
+         * need to write isHit and isMiss function to check if its a hit
+          wCount++;
+        }*/
+        
+        Serial.println(i);
+        Serial.println(j);
+        Serial.println(wCount);
+      }//End of if statement
+    }//End of j for loop
+  }//End of i for loop 
+  
+  if(wCount != uWin){   //Check if player missle hits equals to the winning score 
+    
+    //End players turn
+    
+  }//End of if statement
+  else {
+    //End game or restart board GAME OVER
+  }// End of else
+}//End of winCheck function
