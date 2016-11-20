@@ -610,28 +610,48 @@ bool winCheck(){
   
   for(i = 0; i <= 9; i++){  //goes through the rows 
     for(j = 0; j <= 9; j++){   //goes through the colms
-      if( mMatrix1[i][j] == shipMatrix2[i][j]){  //if missle matrix 1 equal to 2 than add to win count  
+      if( mMatrix1[i][j] == shipMatrix2[i][j]){  //if mMatrix 1,2 equal to shipMatrix 1,2 than add to win count  
         
-        /*if(isHit){
+        /*if(isHit(i, j)){
          * need to write isHit and isMiss function to check if its a hit
           wCount++;
         }*/
-        
+
+        // Checker 
         Serial.println(i);
         Serial.println(j);
         Serial.println(wCount);
+        //////////////////////////////
+        
       }//End of if statement
     }//End of j for loop
   }//End of i for loop 
   
   if(wCount != uWin){   //Check if player missle hits equals to the winning score 
-    
     //End players turn
-    
+    return false;
   }//End of if statement
   else {
     //End game or restart board GAME OVER
+    return true;
   }// End of else
-
-  return false;
+  
 }//End of winCheck function
+
+
+//(a,b) are the coordinates from winCheck
+bool isHit(int a, int b) {
+  //go through the matrix until you hit the coordinates 
+  for(int i = 0; i <= a; i++){
+    for(int j = 0; j <= b; j++) {
+      
+      if(i == a && j == b) { //When the loop reaches coordinates 
+        //See if there is a ship there with the shipMatrix 
+        shipMatrix2[i][j];
+        return true;//return true if there is a ship
+      }// End of if statement 
+      
+    }//End of inner for loop
+  }//End of for loop
+}//End of isHit Function 
+
