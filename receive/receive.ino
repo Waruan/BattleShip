@@ -41,8 +41,19 @@ int cursorY = 0;// Y-axis of Cursor
 int cursorX2 = 0;// X-axis of Cursor
 int cursorY2 = 0;// Y-axis of Cursor
 
+int mcursorX = 0;// X-axis of Cursor
+int mcursorY = 0;// Y-axis of Cursor
+
+int mcursorX2 = 0;// X-axis of Cursor
+int mcursorY2 = 0;// Y-axis of Cursor
+
+
 int lastLocation = 0;
 int lastLocation2 = 0;
+
+int mlastLocation = 0;
+int mlastLocation2 = 0;
+
 int shipMatrix[10][10] = {
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -58,6 +69,33 @@ int shipMatrix[10][10] = {
 
 
 int shipMatrix2[10][10] = {
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+int mMatrix1[10][10] = {
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+
+int mMatrix2[10][10] = {
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -130,7 +168,8 @@ void receiveEvent(int howMany)
     else{
       placeShip(1);
     }
-  }if(input[0] == '2'){
+  }
+  if(input[0] == '2'){
     if(gameMode != 1){
       board();
       gameMode = 1;
@@ -140,10 +179,106 @@ void receiveEvent(int howMany)
     }
   }
 
+  if(input[0] == '3'){
+    placeMissile(1);
+  }
+  if(input[0] == '4'){
+    placeMissile(1);
+  }
 
   
 }
+void placeMissile(int player){
+  if(player == 1){
+    int xdirection = mcursorX;
+    int ydirection = mcursorY;
+    //matrix.drawRect(18,18,12,12, matrix.Color333(0, 7, 7));
+    if(mlastLocation == 0){
+      matrix.drawPixel((19+mcursorX),(19+mcursorY),matrix.Color333(0,0,0)); 
+      mMatrix1[mcursorX][mcursorY] = 0;
+    }
+    else if(mlastLocation == 2){
+      matrix.drawPixel((19+mcursorX),(19+mcursorY),matrix.Color333(7,0,0)); 
+      mMatrix1[mcursorX][mcursorY] = 2;
+    }
+    if(input[1] == '1'){
+      if(mcursorX < 9){
+        mcursorX++;
+      }
+    }
+    else if (input[1] == '2'){
+      if(mcursorX > 0){
+        mcursorX--;
+      }
+    }
 
+    if(input[2] == '1'){
+      if(mcursorY < 9){
+        mcursorY++;
+      }
+    }
+    else if (input[2] == '2'){
+      if(mcursorY > 0){
+        mcursorY--;
+      }
+    }
+
+    mMatrix1[xdirection][ydirection]= mlastLocation;
+    mlastLocation = mMatrix1[mcursorX][mcursorY];
+    matrix.drawPixel((19+mcursorX),(19+mcursorY),matrix.Color333(7,7,7));
+    mMatrix1[mcursorX][mcursorY] = 1;
+    if(input[4] == '4'){
+      matrix.drawPixel((19+mcursorX),(19+mcursorY),matrix.Color333(7,0,0));
+      mMatrix1[mcursorX][mcursorY] = 2;
+      mlastLocation = 2;
+    }
+  }
+  
+  if(player == 2){
+    int xdirection = mcursorX2;
+    int ydirection = mcursorY2;
+    // matrix.drawRect(18,2,12,12, matrix.Color333(7, 7, 0));
+    if(mlastLocation2 == 0){
+      matrix.drawPixel((19+mcursorX),(3+mcursorY2),matrix.Color333(0,0,0)); 
+      mMatrix1[mcursorX2][mcursorY2] = 0;
+    }
+    else if(mlastLocation2 == 2){
+      matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(7,0,0)); 
+      mMatrix1[mcursorX2][mcursorY2] = 2;
+    }
+    if(input[1] == '1'){
+      if(mcursorX2 < 9){
+        mcursorX2++;
+      }
+    }
+    else if (input[1] == '2'){
+      if(mcursorX2 > 0){
+        mcursorX2--;
+      }
+    }
+
+    if(input[2] == '1'){
+      if(mcursorY2 < 9){
+        mcursorY2++;
+      }
+    }
+    else if (input[2] == '2'){
+      if(mcursorY2 > 0){
+        mcursorY2--;
+      }
+    }
+
+    mMatrix2[xdirection][ydirection]= mlastLocation2;
+    mlastLocation2 = mMatrix2[mcursorX2][mcursorY2];
+    matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(7,7,7));
+    mMatrix2[mcursorX2][mcursorY2] = 1;
+    if(input[4] == '4'){
+      matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(7,0,0));
+      mMatrix2[mcursorX2][mcursorY2] = 2;
+      mlastLocation2 = 2;
+    }
+  }
+}
 void placeShip(int player){
   /*Serial.println(input[4]);
   if(input[4] == '2'){
