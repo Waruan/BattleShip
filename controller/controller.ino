@@ -205,10 +205,18 @@ void gamePlay(){
     input[4] = '0';
     movement(1);
     if(input[3] == '0'){
-      if(mMatrix1[cursorLocation[0]][cursorLocation[1]] != 2 && cursorLastValue !=2 ){
-        mMatrix1[cursorLocation[0]][cursorLocation[1]] = 2;
-        cursorLastValue = 2;
-        input[4] = '4';
+      if(mMatrix1[cursorLocation[0]][cursorLocation[1]] != 2 && cursorLastValue !=2 
+       &&mMatrix1[cursorLocation[0]][cursorLocation[1]] != 3 && cursorLastValue !=3 ){
+        if(isHit(cursorLocation[0],cursorLocation[1])){
+          mMatrix1[cursorLocation[0]][cursorLocation[1]] = 2;
+          cursorLastValue = 2;
+          input[4] = '4';
+        }
+        else{
+          mMatrix1[cursorLocation[0]][cursorLocation[1]] = 3;
+          cursorLastValue = 3;
+          input[4] = '5';
+        }
         input[1] = '0';
         input[2] = '0';
         turn = 2;
@@ -227,10 +235,19 @@ void gamePlay(){
     input[4] = '0';
     movement2(1);
     if(input[3] == '0'){
-      if(mMatrix2[cursorLocation2[0]][cursorLocation2[1]] != 2 && cursorLastValue2 !=2 ){
-        mMatrix2[cursorLocation2[0]][cursorLocation2[1]] = 2;
-        cursorLastValue2 = 2;
-        input[4] = '4';
+      if(mMatrix2[cursorLocation2[0]][cursorLocation2[1]] != 2 && cursorLastValue2 !=2 
+      && mMatrix2[cursorLocation2[0]][cursorLocation2[1]] != 3 && cursorLastValue2 !=3){
+        if(isHit2(cursorLocation2[0],cursorLocation2[1])){
+          mMatrix2[cursorLocation2[0]][cursorLocation2[1]] = 2;
+          cursorLastValue2 = 2;
+          input[4] = '4';
+        }
+        else{
+          mMatrix2[cursorLocation2[0]][cursorLocation2[1]] = 3;
+          cursorLastValue2 = 3;
+          input[4] = '5';
+        }
+   
         input[1] = '0';
         input[2] = '0';
         turn = 1;
@@ -240,7 +257,7 @@ void gamePlay(){
       }
     }
    }
-    win = winCheck();
+    win = winCheck2();
     if(win == true){
       break;
     }
@@ -438,11 +455,11 @@ void shipmentplacement(int player) {
   //Serial.print("Number of Player ");
   //Serial.println(player);
   //printboard();
-  int ships[10]={2,2,2,2,3,3,3,4,4,6};
+  int ships[10]={2,3,3,4,5}; // = 
   int shipPlaced = 0;
   if(player == 1){
     shipPlaced = 0;
-    while (shipPlaced < 10) {
+    while (shipPlaced < 5) {
     movement(0);
     if(input[3] == '0'){
       if(collisionCheck(cursorLocation[0],cursorLocation[1],ships[shipPlaced],false) != false){
@@ -465,7 +482,7 @@ void shipmentplacement(int player) {
  }
  if(player == 2){
     shipPlaced = 0;
-    while (shipPlaced < 10) {
+    while (shipPlaced < 5) {
     movement2(0);
     if(input[3] == '0'){
       if(collisionCheck2(cursorLocation2[0],cursorLocation2[1],ships[shipPlaced],false) != false){
@@ -616,12 +633,12 @@ bool winCheck(){
   
   for(i = 0; i <= 9; i++){  //goes through the rows 
     for(j = 0; j <= 9; j++){   //goes through the colms
-      if( mMatrix1[i][j] == shipMatrix2[i][j]){  //if mMatrix 1,2 equal to shipMatrix 1,2 than add to win count  
+      if( mMatrix1[i][j] == 2){  //if mMatrix 1,2 equal to shipMatrix 1,2 than add to win count  
         
-        /*if(isHit(i, j)){
-         * need to write isHit and isMiss function to check if its a hit
+        if(isHit(i, j) == true ){
+          //need to write isHit and isMiss function to check if its a hit
           wCount++;
-        }*/
+        }
 
         // Checker 
         Serial.println(i);
@@ -644,21 +661,61 @@ bool winCheck(){
   
 }//End of winCheck function
 
+
+
+bool winCheck2(){
+ int wCount = 0; //score counter
+ int uWin = 17; //winning score
+ int i; //rows
+ int j;  //colms 
+  
+  for(i = 0; i <= 9; i++){  //goes through the rows 
+    for(j = 0; j <= 9; j++){   //goes through the colms
+      if( mMatrix2[i][j] == 2){  //if mMatrix 1,2 equal to shipMatrix 1,2 than add to win count  
+        
+        if(isHit(i, j) == true){
+          //need to write isHit and isMiss function to check if its a hit
+          wCount++;
+        }
+
+        // Checker 
+        Serial.println(i);
+        Serial.println(j);
+        Serial.println(wCount);
+        //////////////////////////////
+        
+      }//End of if statement
+    }//End of j for loop
+  }//End of i for loop 
+  
+  if(wCount != uWin){   //Check if player missle hits equals to the winning score 
+    //End players turn
+    return false;
+  }//End of if statement
+  else {
+    //End game or restart board GAME OVER
+    return true;
+  }// End of else
+  
+}//End of winCheck function
 //(a,b) are the coordinates from winCheck
 bool isHit(int a, int b) {
+  
   //go through the matrix until you hit the coordinates 
-  for(int i = 0; i <= a; i++){
-    for(int j = 0; j <= b; j++) {
-      
-      if(i == a && j == b) { //When the loop reaches coordinates 
-        //See if there is a ship there with the shipMatrix 
-        if(shipMatrix2[i][j] == 2 || shipMatrix2[i][j] == 3 || 
-            shipMatrix2[i][j] == 4 || shipMatrix2[i][j] == 5) {
-             return true;//return true if there is a ship 
-            }
-      }// End of if statement 
-      
-    }//End of inner for loop
-  }//End of for loop
+  if(shipMatrix2[a][b] == 2) {
+    return true;
+  }//End of if statement
+
+  return false;
+}//End of isHit Function
+
+bool isHit2(int a, int b) {
+  
+  //go through the matrix until you hit the coordinates 
+  if(shipMatrix[a][b] == 2) {
+    return true;
+  }//End of if statement
+
+  return false;
 }//End of isHit Function 
 
