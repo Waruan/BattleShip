@@ -28,7 +28,7 @@ RGBmatrixPanel matrix(A, B, C, D, CLK, LAT, OE, false);
 char input[6]; //Data from controller
 int gameMode = -1; //Save the mode Default at -1 so that in not in any mode
 int numberOfPlayer = 1;//Save number of player Default at 1 player 
-int ships[10]={2,2,2,2,3,3,3,4,4,6};
+int ships[10]={2,3,3,4,5};
 int rotation = 0;//0 for vertial and 1 for horztional
 int whichShip = 0;
 
@@ -188,6 +188,7 @@ void receiveEvent(int howMany)
 
   
 }
+
 void placeMissile(int player){
   if(player == 1){
     int xdirection = mcursorX;
@@ -200,6 +201,10 @@ void placeMissile(int player){
     else if(mlastLocation == 2){
       matrix.drawPixel((19+mcursorX),(19+mcursorY),matrix.Color333(7,0,0)); 
       mMatrix1[mcursorX][mcursorY] = 2;
+    }
+    else if(mlastLocation == 3){
+      matrix.drawPixel((19+mcursorX),(19+mcursorY),matrix.Color333(3,3,3)); 
+      mMatrix1[mcursorX][mcursorY] = 3;
     }
     if(input[1] == '1'){
       if(mcursorX < 9){
@@ -227,10 +232,18 @@ void placeMissile(int player){
     mlastLocation = mMatrix1[mcursorX][mcursorY];
     matrix.drawPixel((19+mcursorX),(19+mcursorY),matrix.Color333(7,7,7));
     mMatrix1[mcursorX][mcursorY] = 1;
+    //hit
     if(input[4] == '4'){
       matrix.drawPixel((19+mcursorX),(19+mcursorY),matrix.Color333(7,0,0));
       mMatrix1[mcursorX][mcursorY] = 2;
       mlastLocation = 2;
+    }
+    //miss
+   
+    if(input[4] == '5'){
+      matrix.drawPixel((19+mcursorX),(19+mcursorY),matrix.Color333(3,3,3));
+      mMatrix1[mcursorX][mcursorY] = 3;
+      mlastLocation = 3;
     }
   }
   
@@ -245,6 +258,10 @@ void placeMissile(int player){
     else if(mlastLocation2 == 2){
       matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(7,0,0)); 
       mMatrix2[mcursorX2][mcursorY2] = 2;
+    }
+    else if(mlastLocation2 == 3){
+      matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(3,3,3)); 
+      mMatrix2[mcursorX2][mcursorY2] = 3;
     }
     if(input[1] == '1'){
       if(mcursorX2 < 9){
@@ -277,6 +294,18 @@ void placeMissile(int player){
       mMatrix2[mcursorX2][mcursorY2] = 2;
       mlastLocation2 = 2;
     }
+
+    if(input[4] == '4'){
+      matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(7,0,0));
+      mMatrix2[mcursorX2][mcursorY2] = 2;
+      mlastLocation2 = 2;
+    }
+    if(input[4] == '5'){
+      matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(3,3,3));
+      mMatrix2[mcursorX2][mcursorY2] = 3;
+      mlastLocation2 = 3;
+    }
+    
   }
 }
 void placeShip(int player){
@@ -329,7 +358,7 @@ void placeShip(int player){
      matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(7,7,7));
      shipMatrix[cursorX][cursorY] = 1;
     if(input[4] == '1'){
-      if(whichShip < 10){
+      if(whichShip < 5){
         for(int i=0;i<ships[whichShip];i++){
           matrix.drawPixel((3+cursorX+i),(19+cursorY),matrix.Color333(0,7,0));
           shipMatrix[cursorX+i][cursorY] = 2;
@@ -381,7 +410,7 @@ void placeShip(int player){
      matrix.drawPixel((3+cursorX2),(3+cursorY2),matrix.Color333(7,7,7));
      shipMatrix2[cursorX2][cursorY2] = 1;
     if(input[4] == '1'){
-      if(whichShip2 < 10){
+      if(whichShip2 < 5){
         for(int i=0;i<ships[whichShip2];i++){
           matrix.drawPixel((3+cursorX2+i),(3+cursorY2),matrix.Color333(0,7,0));
           shipMatrix2[cursorX2+i][cursorY2] = 2;
