@@ -2,12 +2,14 @@
 #include <Wire.h>
 
 const int SW_pin = 2; // digital pin connected to switch output
+const int SW_pin3 = 4; // digital pin connected to switch output
 
 const int X_pin = 0; // analog pin connected to X output
 const int Y_pin = 1; // analog pin connected to Y output
 
 
 const int SW_pin2 = 3; // digital pin connected to switch output
+const int SW_pin4 = 5; // digital pin connected to switch output
 
 const int X_pin2 = 2; // analog pin connected to X output
 const int Y_pin2 = 3; // analog pin connected to Y output
@@ -16,6 +18,7 @@ char input[6];
 int numPlayer = 0;
 //2d input 10x10 for each grid
 
+bool rotation = false;
 int cursorLocation[2] = {0, 0};
 int cursorLastValue= 0;
 int shipMatrix[10][10] = {
@@ -73,7 +76,7 @@ int mMatrix2[10][10] = {
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-
+int winner = 0;
 void setup() {
   
   pinMode(SW_pin, INPUT);
@@ -81,6 +84,12 @@ void setup() {
   
   pinMode(SW_pin2, INPUT);
   digitalWrite(SW_pin2, HIGH);
+
+  pinMode(SW_pin3, INPUT);
+  digitalWrite(SW_pin3, HIGH);
+  
+  pinMode(SW_pin4, INPUT);
+  digitalWrite(SW_pin4, HIGH);
   
   Serial.begin(115200);
   Wire.begin();        // join i2c bus (address optional for master)
@@ -96,16 +105,39 @@ void loop() {
   }
   else {
     input[0] = '1';
+    rotation = false;
     shipmentplacement(1);
     input[0] = '2';
+    rotation = false;
     shipmentplacement(2);
   }
   
   gamePlay();
-  delay(500);
 
+  winnerDisplay();
+  delay(3000);
+
+  reset();
+  
 }
 
+void reset(){
+  winner = 0;
+  cursorLocation2[0] = 0;
+  cursorLocation2[1] = 0;
+  cursorLocation[0] = 0;
+  cursorLocation[1] = 0;
+  cursorLastValue2= 0;
+  cursorLastValue= 0;
+  for(int i=0;i<10;i++){
+    for(int j=0;j<10;j++){
+      mMatrix1[i][j] = 0;
+      mMatrix2[i][j] = 0;
+      shipMatrix[i][j] = 0;
+      shipMatrix2[i][j] = 0;
+    }
+  }
+}
 
 /*
  * 
@@ -138,7 +170,8 @@ void loop() {
  * input[3]= button
  * 1 not press
  * 0 press
- * 
+ * 2 press
+ * 3 not press
  */
 
  /*
@@ -146,9 +179,25 @@ void loop() {
   * 2 = ship at last location
   * 3 = rotation
   * 1 = confirm placement
-  * 4 = confirm missile placement
+  * 4 = confirm missile placement/hit
+  * 5 = confirm missile placement/miss
+  * 6 = rotation not press 
+  * 7 = rotation press
+  * 8 = player 1 win
+  * 9 = player 2 win
   */
 //input[5]= end of string char
+
+void winnerDisplay(){
+  input[0] = '5';
+  if(winner == 1){
+    input[4] = '8';
+  }
+  else if(winner == 2){
+     input[4] = '9';
+  }
+  sendinput();
+}
 
 void modeSelect() {
   int button = HIGH;
@@ -270,6 +319,7 @@ void movement(int shipOrMissile) {
   int ydirection = cursorLocation[1];
 
   int button = HIGH;
+  int button2 = LOW;
   //input[0] = '1';
   int x = analogRead(X_pin);
 
@@ -327,6 +377,14 @@ void movement(int shipOrMissile) {
     input[3] = '0';
   }
 
+  button2 = digitalRead(SW_pin3);
+  //Serial.print(button2);
+ if (button2 == 1) {
+    input[3] = '2';
+    rotation = !rotation;
+ }
+
+  
   if(shipOrMissile == 0){
     shipMatrix[xdirection][ydirection]= cursorLastValue;
     cursorLastValue = shipMatrix[cursorLocation[0]][cursorLocation[1]];
@@ -364,6 +422,7 @@ void movement2(int shipOrMissile) {
   int ydirection = cursorLocation2[1];
 
   int button = HIGH;
+  int button2 = LOW;
   //input[0] = '1';
   int x = analogRead(X_pin2);
 
@@ -420,6 +479,14 @@ void movement2(int shipOrMissile) {
   else if (button == LOW) {
     input[3] = '0';
   }
+
+  button2 = digitalRead(SW_pin4);
+  //Serial.print(button2);
+  if (button2 == 1) {
+    input[3] = '2';
+    rotation = !rotation;
+  }
+  
   if(shipOrMissile == 0){
     shipMatrix2[xdirection][ydirection]= cursorLastValue2;
     cursorLastValue2 = shipMatrix2[cursorLocation2[0]][cursorLocation2[1]];
@@ -462,15 +529,30 @@ void shipmentplacement(int player) {
     while (shipPlaced < 5) {
     movement(0);
     if(input[3] == '0'){
-      if(collisionCheck(cursorLocation[0],cursorLocation[1],ships[shipPlaced],false) != false){
-        for(int i =0;i<ships[shipPlaced];i++){
-          shipMatrix[cursorLocation[0]+i][cursorLocation[1]] = 2;
+      if(collisionCheck(cursorLocation[0],cursorLocation[1],ships[shipPlaced]) != false){
+        if(rotation == false){
+          for(int i =0;i<ships[shipPlaced];i++){
+            shipMatrix[cursorLocation[0]+i][cursorLocation[1]] = 2;
+          }
+        }
+        else if(rotation == true){
+          for(int i =0;i<ships[shipPlaced];i++){
+            shipMatrix[cursorLocation[0]][cursorLocation[1]+i] = 2;
+          }
         }
         cursorLastValue = 2;
         shipPlaced++;
         input[4] = '1';
         input[1] = '0';
         input[2] = '0';
+        Wire.beginTransmission(8); // transmit to device #8
+        Wire.write(input);       // write five bytes
+        Wire.endTransmission();    // stop transmitting
+      }
+      if(input[3] == '2'){
+        input[1] = '0';
+        input[2] = '0';
+        
         Wire.beginTransmission(8); // transmit to device #8
         Wire.write(input);       // write five bytes
         Wire.endTransmission();    // stop transmitting
@@ -485,15 +567,30 @@ void shipmentplacement(int player) {
     while (shipPlaced < 5) {
     movement2(0);
     if(input[3] == '0'){
-      if(collisionCheck2(cursorLocation2[0],cursorLocation2[1],ships[shipPlaced],false) != false){
-        for(int i =0;i<ships[shipPlaced];i++){
-          shipMatrix2[cursorLocation2[0]+i][cursorLocation2[1]] = 2;
+      if(collisionCheck2(cursorLocation2[0],cursorLocation2[1],ships[shipPlaced]) != false){
+        if(rotation == false){
+          for(int i =0;i<ships[shipPlaced];i++){
+            shipMatrix2[cursorLocation2[0]+i][cursorLocation2[1]] = 2;
+          }
+        }
+        else if(rotation == true){
+          for(int i =0;i<ships[shipPlaced];i++){
+            shipMatrix2[cursorLocation2[0]][cursorLocation2[1]+i] = 2;
+          }
         }
         cursorLastValue2 = 2;
         shipPlaced++;
         input[4] = '1';
         input[1] = '0';
         input[2] = '0';
+        Wire.beginTransmission(8); // transmit to device #8
+        Wire.write(input);       // write five bytes
+        Wire.endTransmission();    // stop transmitting
+      }
+      if(input[3] == '2'){
+        input[1] = '0';
+        input[2] = '0';
+       
         Wire.beginTransmission(8); // transmit to device #8
         Wire.write(input);       // write five bytes
         Wire.endTransmission();    // stop transmitting
@@ -509,7 +606,7 @@ void shipmentplacement(int player) {
 
 // rotation 0 == vertial
 // rotation 1 == horziontal
-bool collisionCheck(int i,int j,int shipSize,bool rotation){
+bool collisionCheck(int i,int j,int shipSize){
   // check x-axis boundary
   if(rotation == false){
     if(i+shipSize > 10){
@@ -539,7 +636,7 @@ bool collisionCheck(int i,int j,int shipSize,bool rotation){
   
 }
 
-bool collisionCheck2(int i,int j,int shipSize,bool rotation){
+bool collisionCheck2(int i,int j,int shipSize){
   // check x-axis boundary
   if(rotation == false){
     if(i+shipSize > 10){
@@ -609,6 +706,8 @@ void printboard2(int shipOrMissile) {
 }
 
 void printCont(){
+
+  
   Serial.print("Switch:  ");
   Serial.print(input[3]);
   Serial.print("\n");
@@ -656,6 +755,7 @@ bool winCheck(){
   }//End of if statement
   else {
     //End game or restart board GAME OVER
+    winner == 1;
     return true;
   }// End of else
   
@@ -694,7 +794,9 @@ bool winCheck2(){
   }//End of if statement
   else {
     //End game or restart board GAME OVER
+    winner == 2;
     return true;
+
   }// End of else
   
 }//End of winCheck function
@@ -712,7 +814,7 @@ bool isHit(int a, int b) {
 bool isHit2(int a, int b) {
   
   //go through the matrix until you hit the coordinates 
-  if(shipMatrix[a][b] == 2) {
+  if(shipMatrix[9-a][9-b] == 2) {
     return true;
   }//End of if statement
 
