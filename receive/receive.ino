@@ -29,10 +29,10 @@ char input[6]; //Data from controller
 int gameMode = -1; //Save the mode Default at -1 so that in not in any mode
 int numberOfPlayer = 1;//Save number of player Default at 1 player 
 int ships[10]={2,3,3,4,5};
-int rotation = 0;//0 for vertial and 1 for horztional
+
 int whichShip = 0;
 
-int rotation2 = 0;//0 for vertial and 1 for horztional
+
 int whichShip2 = 0;
 
 int cursorX = 0;// X-axis of Cursor
@@ -54,6 +54,8 @@ int lastLocation2 = 0;
 int mlastLocation = 0;
 int mlastLocation2 = 0;
 
+bool rotation1 = false;
+bool rotation2 = false;
 int shipMatrix[10][10] = {
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -115,9 +117,7 @@ void setup() {
   Serial.begin(9600);  // start serial for output
   
   matrix.begin();
-  board();
-  delay(500);
-  modeSelectLayout();
+
 }
 
 void loop() {
@@ -186,7 +186,36 @@ void receiveEvent(int howMany)
     placeMissile(2);
   }
 
+  if(input[0] == '5'){
+    winnerDisplay();
+  }
+
   
+}
+
+void winnerDisplay(){
+  if(input[4] = '8'){
+    matrix.fillScreen(matrix.Color333(0, 0, 0));
+  
+    matrix.setCursor(3, 0);    // start at top left, with one pixel of spacing
+    matrix.setTextSize(1);     // size 1 == 8 pixels high
+    matrix.setTextWrap(true); // Don't wrap at end of line - will do ourselves
+
+    matrix.setTextColor(matrix.Color333(0,7,0));
+    matrix.println("Winner Player 1");
+ 
+  }
+  else if(input[4] = '9'){
+    matrix.fillScreen(matrix.Color333(0, 0, 0));
+  
+    matrix.setCursor(3, 0);    // start at top left, with one pixel of spacing
+    matrix.setTextSize(1);     // size 1 == 8 pixels high
+    matrix.setTextWrap(true); // Don't wrap at end of line - will do ourselves
+
+    matrix.setTextColor(matrix.Color333(0,7,0));
+    matrix.println("Winner Player 2");
+ 
+  }
 }
 
 void placeMissile(int player){
@@ -289,11 +318,7 @@ void placeMissile(int player){
     mlastLocation2 = mMatrix2[mcursorX2][mcursorY2];
     matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(7,7,7));
     mMatrix2[mcursorX2][mcursorY2] = 1;
-    if(input[4] == '4'){
-      matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(7,0,0));
-      mMatrix2[mcursorX2][mcursorY2] = 2;
-      mlastLocation2 = 2;
-    }
+    
 
     if(input[4] == '4'){
       matrix.drawPixel((19+mcursorX2),(3+mcursorY2),matrix.Color333(7,0,0));
@@ -357,12 +382,24 @@ void placeShip(int player){
     lastLocation = shipMatrix[cursorX][cursorY];
      matrix.drawPixel((3+cursorX),(19+cursorY),matrix.Color333(7,7,7));
      shipMatrix[cursorX][cursorY] = 1;
+    if(input[3] == '2'){
+      rotation1 = !rotation1;
+    }
     if(input[4] == '1'){
       if(whichShip < 5){
-        for(int i=0;i<ships[whichShip];i++){
-          matrix.drawPixel((3+cursorX+i),(19+cursorY),matrix.Color333(0,7,0));
-          shipMatrix[cursorX+i][cursorY] = 2;
-          lastLocation = 2;
+        if(rotation1 == false){
+          for(int i=0;i<ships[whichShip];i++){
+            matrix.drawPixel((3+cursorX+i),(19+cursorY),matrix.Color333(0,7,0));
+            shipMatrix[cursorX+i][cursorY] = 2;
+            lastLocation = 2;
+          }
+        }
+        else if(rotation1 == true){
+          for(int i=0;i<ships[whichShip];i++){
+            matrix.drawPixel((3+cursorX),(19+cursorY+i),matrix.Color333(0,7,0));
+            shipMatrix[cursorX][cursorY+i] = 2;
+            lastLocation = 2;
+          }
         }
         whichShip++;
       }
@@ -409,12 +446,24 @@ void placeShip(int player){
     lastLocation2 = shipMatrix2[cursorX2][cursorY2];
      matrix.drawPixel((3+cursorX2),(3+cursorY2),matrix.Color333(7,7,7));
      shipMatrix2[cursorX2][cursorY2] = 1;
+    if(input[3] == '2'){
+      rotation2 = !rotation2;
+    }
     if(input[4] == '1'){
       if(whichShip2 < 5){
-        for(int i=0;i<ships[whichShip2];i++){
-          matrix.drawPixel((3+cursorX2+i),(3+cursorY2),matrix.Color333(0,7,0));
-          shipMatrix2[cursorX2+i][cursorY2] = 2;
-          lastLocation2 = 2;
+        if(rotation2 == false){
+          for(int i=0;i<ships[whichShip2];i++){
+            matrix.drawPixel((3+cursorX2+i),(3+cursorY2),matrix.Color333(0,7,0));
+            shipMatrix2[cursorX2+i][cursorY2] = 2;
+            lastLocation2 = 2;
+          }
+        }
+        else if(rotation2 == true){
+          for(int i=0;i<ships[whichShip2];i++){
+            matrix.drawPixel((3+cursorX2),(3+cursorY2+i),matrix.Color333(0,7,0));
+            shipMatrix2[cursorX2][cursorY2+i] = 2;
+            lastLocation2 = 2;
+          }
         }
         whichShip2++;
       }
