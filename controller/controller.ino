@@ -129,6 +129,7 @@ void reset(){
   cursorLocation[1] = 0;
   cursorLastValue2= 0;
   cursorLastValue= 0;
+  numPlayer = 0;
   for(int i=0;i<10;i++){
     for(int j=0;j<10;j++){
       mMatrix1[i][j] = 0;
@@ -734,10 +735,8 @@ bool winCheck(){
     for(j = 0; j <= 9; j++){   //goes through the colms
       if( mMatrix1[i][j] == 2){  //if mMatrix 1,2 equal to shipMatrix 1,2 than add to win count  
         
-        if(isHit(i, j) == true ){
           //need to write isHit and isMiss function to check if its a hit
           wCount++;
-        }
 
         // Checker 
         Serial.println(i);
@@ -755,7 +754,7 @@ bool winCheck(){
   }//End of if statement
   else {
     //End game or restart board GAME OVER
-    winner == 1;
+    winner = 1;
     return true;
   }// End of else
   
@@ -773,10 +772,9 @@ bool winCheck2(){
     for(j = 0; j <= 9; j++){   //goes through the colms
       if( mMatrix2[i][j] == 2){  //if mMatrix 1,2 equal to shipMatrix 1,2 than add to win count  
         
-        if(isHit(i, j) == true){
           //need to write isHit and isMiss function to check if its a hit
           wCount++;
-        }
+       
 
         // Checker 
         Serial.println(i);
@@ -794,7 +792,7 @@ bool winCheck2(){
   }//End of if statement
   else {
     //End game or restart board GAME OVER
-    winner == 2;
+    winner = 2;
     return true;
 
   }// End of else
